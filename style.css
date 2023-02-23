@@ -17,3 +17,18 @@ body
 {
     overflow: hidden;
 }
+
+#controls {
+    z-index: 10;
+    position: absolute;
+}
+
+button {
+	-webkit-appearance: none;	
+	font-family: Courier;
+	font-size: 12pt;
+	text-align: center;
+	min-width: 80px;
+	border-radius: 0;
+}
+

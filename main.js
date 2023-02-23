@@ -19,13 +19,11 @@ renderer.setSize(sizes.width, sizes.height);
 
 
 // Actors at the mark
-const rubikCube = await rubik.getBlenderCube(scene);
-scene.add(rubikCube[0]);
+const mesh = await rubik.getBlenderCube();
+scene.add(mesh[0])
 
-const cubelets = rubikCube[1]
 
-// const rubikCube = rubik.getCube(1)
-// scene.add(rubikCube);
+const Cube = new rubik.RubiksCube(scene, mesh[0], mesh[1])
 
 
 // Lights
@@ -50,24 +48,6 @@ window.addEventListener("resize", () => {
 });
 
 
-
-const pivot = new THREE.Object3D()
-pivot.position.set(1, 1, 1)
-pivot.updateMatrixWorld();
-scene.add(pivot)
-
-for (const cubelet of cubelets) {
-
-  if (cubelet.position.x === 2) {
-    pivot.attach(cubelet)
-  }
-
-}
-
-const mover = new rubik.RubiksCube()
-
-mover.moveLR(pivot, true)
-
 function action() {
   requestAnimationFrame(action);
   TWEEN.update()
@@ -78,4 +58,11 @@ function action() {
 action()
 
 
+document.getElementById("controls").addEventListener("click", function (event) {
 
+  if (event.target.id === "controls") {
+    return
+  }
+  Cube.move(event.target.id)
+
+})

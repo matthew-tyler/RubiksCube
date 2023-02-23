@@ -138,43 +138,115 @@ export async function getBlenderCube() {
 
 export class RubiksCube {
 
-    constructor() {
+    constructor(Scene, Mesh, Cubelets) {
+        this.Scene = Scene;
+        this.Mesh = Mesh;
+        this.Cubelets = Cubelets;
         return this
     }
 
-
-    moveLR(pivotGroup, counterclockwise) {
-
-        var direction = "+"
-
-        if (counterclockwise) {
-            direction = "-"
-        }
-        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ x: direction + Math.PI / 2 }, 1000) // relative animation
-            .delay(1000).start()
+    moves = {
+        L: [-2, "x"],
+        R: [2, "x"],
+        U: [2, "y"],
+        D: [-2, "y"],
+        F: [2, "z"],
+        B: [-2, "z"]
     }
 
+    moving = false
+    // "L R U D F B"
+    // "L' R' U' D' F' B'"
+    move(code) {
+        var m = this.moves[code.charAt(0)]
+        var counterclockwise = (code.length > 1)
 
-    moveUD(pivotGroup, counterclockwise) {
+        const pivot = new THREE.Object3D()
+        pivot.position.set(1, 1, 1)
+        pivot.updateMatrixWorld();
+        this.Scene.add(pivot)
 
+        const reattach = []
+
+        for (const cubelet of this.Cubelets) {
+            if (cubelet.position[m[1]] === m[0]) {
+                pivot.attach(cubelet)
+                // reattach.push(cubelet)
+            }
+        }
+
+        this.moving = true;
+
+        switch (code.charAt(0)) {
+            case "L":
+            case "R":
+                this.moveLR(pivot, counterclockwise)
+                break;
+            case "U":
+            case "D":
+                this.moveUD(pivot, counterclockwise)
+                break;
+            case "F":
+            case "B":
+                this.moveFB(pivot, counterclockwise)
+        }
+
+
+        for (const cubelet of this.Cubelets) {
+
+            console.log(cubelet.position);
+            // this.Scene.attach(cubelet)
+        }
+
+
+
+        pivot.remove()
+    }
+
+    setMoving = () => { this.moving = false }
+
+    moveLR(pivotGroup, counterclockwise) {
         var direction = "+"
 
         if (counterclockwise) {
             direction = "-"
         }
-        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ y: direction + Math.PI / 2 }, 1000) // relative animation
-            .delay(1000).start()
+        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ x: direction + Math.PI / 2 }, 1000)
+        this.animate(tween)
+    }
+
+    moveUD(pivotGroup, counterclockwise) {
+        var direction = "+"
+
+        if (counterclockwise) {
+            direction = "-"
+        }
+        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ y: direction + Math.PI / 2 }, 1000)
+        this.animate(tween)
     }
 
     moveFB(pivotGroup, counterclockwise) {
-
         var direction = "+"
 
         if (counterclockwise) {
             direction = "-"
         }
-        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ z: direction + Math.PI / 2 }, 1000) // relative animation
-            .delay(1000).start()
+        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ z: direction + Math.PI / 2 }, 1000)
+        this.animate(tween)
+    }
+
+
+    animate(tween) {
+
+        var tweens = TWEEN.getAll()
+
+        if (tweens.length === 0) {
+            tween.start()
+        } else {
+            tweens[tweens.length - 1].chain(tween)
+        }
+
+
     }
 
 }
