@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as rubik from "./rubik"
+import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 
 // Setup scene and renderer
 const scene = new THREE.Scene();
 const canvas = document.getElementById("canvas");
 const renderer = new THREE.WebGLRenderer({ canvas });
+renderer.setClearColor(0x191919, 1)
+scene.add(new THREE.AxesHelper(50))
 
 // define size by the size of the window
 const sizes = {
@@ -16,8 +19,13 @@ renderer.setSize(sizes.width, sizes.height);
 
 
 // Actors at the mark
-const rubikCube = rubik.getCube(3);
-scene.add(rubikCube);
+const rubikCube = await rubik.getBlenderCube(scene);
+scene.add(rubikCube[0]);
+
+const cubelets = rubikCube[1]
+
+// const rubikCube = rubik.getCube(1)
+// scene.add(rubikCube);
 
 
 // Lights
@@ -29,7 +37,7 @@ scene.add(light);
 
 // Camera 
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 1, 10000);
-camera.position.set(0, 20, 100);
+camera.position.set(0, 5, 20);
 scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 window.addEventListener("resize", () => {
@@ -41,12 +49,33 @@ window.addEventListener("resize", () => {
   renderer.setSize(sizes.width, sizes.height)
 });
 
+
+
+const pivot = new THREE.Object3D()
+pivot.position.set(1, 1, 1)
+pivot.updateMatrixWorld();
+scene.add(pivot)
+
+for (const cubelet of cubelets) {
+
+  if (cubelet.position.x === 2) {
+    pivot.attach(cubelet)
+  }
+
+}
+
+const mover = new rubik.RubiksCube()
+
+mover.moveLR(pivot, true)
+
 function action() {
-
   requestAnimationFrame(action);
-
+  TWEEN.update()
   controls.update();
   renderer.render(scene, camera);
 }
 
 action()
+
+
+

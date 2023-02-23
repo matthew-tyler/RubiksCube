@@ -1,4 +1,8 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
+
+
 
 // Cube definitions from https://www.speedsolving.com/wiki/index.php/File:Western_colors.png
 const COLOURS = {
@@ -80,4 +84,97 @@ export function getCube(n) {
     }
 
     return group;
+}
+
+
+const loader = new GLTFLoader();
+
+export async function getBlenderCube() {
+
+    var protocube = await loader.loadAsync('flipped.glb');
+
+    protocube = protocube.scene.children[0]
+
+    var cubelets = []
+
+    protocube.traverse(function (node) {
+        if (node instanceof THREE.Mesh) {
+            node.castShadow = true;
+            node.receiveShadow = true;
+        } else {
+            node.layers.disableAll();
+        }
+    });
+
+    const group = new THREE.Group()
+
+    var size = 2
+    var x = -size;
+    var y = -size;
+    var z = -size;
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            for (let k = 0; k < 3; k++) {
+                const cube = protocube.clone()
+                cube.position.set(x, y, z);
+                cube.name = "cubelet"
+                cubelets.push(cube)
+                x += size
+                group.add(cube)
+            }
+            x = -size
+            y += size
+        }
+        y = -size
+        z += size
+    }
+
+    group.name = "Cube"
+    return [group, cubelets]
+}
+
+
+
+export class RubiksCube {
+
+    constructor() {
+        return this
+    }
+
+
+    moveLR(pivotGroup, counterclockwise) {
+
+        var direction = "+"
+
+        if (counterclockwise) {
+            direction = "-"
+        }
+        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ x: direction + Math.PI / 2 }, 1000) // relative animation
+            .delay(1000).start()
+    }
+
+
+    moveUD(pivotGroup, counterclockwise) {
+
+        var direction = "+"
+
+        if (counterclockwise) {
+            direction = "-"
+        }
+        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ y: direction + Math.PI / 2 }, 1000) // relative animation
+            .delay(1000).start()
+    }
+
+    moveFB(pivotGroup, counterclockwise) {
+
+        var direction = "+"
+
+        if (counterclockwise) {
+            direction = "-"
+        }
+        const tween = new TWEEN.Tween(pivotGroup.rotation).to({ z: direction + Math.PI / 2 }, 1000) // relative animation
+            .delay(1000).start()
+    }
+
 }
