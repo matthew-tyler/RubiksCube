@@ -131,6 +131,8 @@ export async function getBlenderCube() {
     }
 
     group.name = "Cube"
+
+
     return [group, cubelets]
 }
 
@@ -155,6 +157,8 @@ export class RubiksCube {
     }
 
     moving = false
+
+
     // "L R U D F B"
     // "L' R' U' D' F' B'"
     move(code) {
@@ -169,11 +173,19 @@ export class RubiksCube {
         const reattach = []
 
         for (const cubelet of this.Cubelets) {
+
+            console.log(cubelet.position);
+            // this.Scene.attach(cubelet)
+        }
+
+
+        for (const cubelet of this.Cubelets) {
             if (cubelet.position[m[1]] === m[0]) {
                 pivot.attach(cubelet)
                 // reattach.push(cubelet)
             }
         }
+
 
         this.moving = true;
 
@@ -192,11 +204,6 @@ export class RubiksCube {
         }
 
 
-        for (const cubelet of this.Cubelets) {
-
-            console.log(cubelet.position);
-            // this.Scene.attach(cubelet)
-        }
 
 
 
