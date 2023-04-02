@@ -1,4 +1,4 @@
-# Rubiks Cube in Three.js
+# Rubik's Cube in Three.js
 
 A little exploration into Three.js and 3d in general. I put together a simple Rubik's cube, with the intent to have it playable and maybe write some cube solving algorithms.
 
