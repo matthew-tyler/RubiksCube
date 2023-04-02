@@ -2,8 +2,6 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 
-
-
 // Cube definitions from https://www.speedsolving.com/wiki/index.php/File:Western_colors.png
 const COLOURS = {
     red: 0xf71414,
@@ -91,7 +89,7 @@ const loader = new GLTFLoader();
 
 export async function getBlenderCube() {
 
-    var protocube = await loader.loadAsync('flipped.glb');
+    var protocube = await loader.loadAsync('/3DModels/flipped.glb');
 
     protocube = protocube.scene.children[0]
 
